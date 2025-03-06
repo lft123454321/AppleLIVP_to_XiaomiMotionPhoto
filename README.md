@@ -1,5 +1,7 @@
 # LIVP to Xiaomi Motion Photo Converter
 
+[中文](/README_CN.md) 
+
 ## Project Overview  
 Convert iOS LIVP files (uploaded to Baidu Netdisk) into Xiaomi-compatible Motion Photo format (embedded MP4 video) with complete metadata preservation.  
 **Platform**: Windows 10/11  
