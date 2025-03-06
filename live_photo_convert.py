@@ -2,6 +2,7 @@ import os
 import zipfile
 import shutil
 import subprocess
+import pillow_heif
 from pillow_heif import register_heif_opener
 from PIL import Image
 import pyexiv2
@@ -34,16 +35,19 @@ def convert_livp(livp_path, output_dir):
         base_name = os.path.splitext(os.path.basename(livp_path))[0]
         input_image_path = os.path.join(temp_dir, input_image_files[0])
         mov_path = os.path.join(temp_dir, mov_files[0])
-        jpeg_path = os.path.join(output_dir, f"{base_name}.jpg")
+        jpeg_path = os.path.join(output_dir, f"MVIMG_{base_name}.jpg")
         mp4_path = os.path.join(output_dir, f"{base_name}.mp4")
 
         # HEIC转JPEG并保留元数据（网页1[1](@ref)的元数据保留方法）
         if input_image_path.endswith('heic'):
             register_heif_opener()
+            # heif_file = pillow_heif.open_heif(input_image_path)
+            # heif_file.to_pillow().save(jpeg_path, "JPEG", quality=95)
             with Image.open(input_image_path) as img:
                 img.save(jpeg_path, "JPEG", quality=95)
             with pyexiv2.Image(input_image_path) as src_img, pyexiv2.Image(jpeg_path) as dst_img:
-                src_img.copy_to_another_image(dst_img, exif=True, iptc=True, xmp=True)
+                src_img.copy_to_another_image(dst_img, exif=True, iptc=False, xmp=False)
+                dst_img.modify_exif({"Exif.Image.Orientation": "1"})
         elif input_image_path.endswith('jpg') or input_image_path.endswith('jpeg'):
             shutil.copy2(input_image_path, jpeg_path)
         else:
